@@ -1,12 +1,33 @@
 <launch>
     <!-- Launch 3 nodes as below
     At development stage, each node should be launched in a separated terminal to view the output -->
+    
+    <!-- Если установить парамерт "run_camera" как true, то запустится узел realsense2_camera -->
+    <arg name="run_camera" default="false"/>
+    <arg name="fcu_url" default="/dev/ttyTHS1:921600"/>
 
     <!-- This node will launch the ROS driver for Realsense T265 -->
-    <include file="$(find realsense2_camera)/launch/rs_t265.launch"/>
+    <group if="$(arg run_camera)">
+        <include file="$(find realsense2_camera)/launch/rs_t265.launch"/>   
+    </group>
+    
 
-    <!-- This node will launch MAVROS -->
-    <include file="$(find mavros)/launch/apm.launch"/>
+    <!--**
+        *This node will launch MAVROS
+        * Если MAVROS подключаем к автопилоту с прошивкой Ardupilot, то необходимо запускать ноду apm.launch
+        *
+        * аргумент для подключения к Jetson Nano
+        * /dev/ttyTHS1 - UART порт на 40-пиновом выводе платы разработчика 
+        * Jetson Nano J41 Pin 8 (TXD) → Cable RXD
+        * Jetson Nano J41 Pin 10 (RXD) → Cable TXD
+        * Jetson Nano J41 Pin 6 (GND) → Cable GND 
+        *
+        * 921600 - сскорость общения PX4 и Jetson
+        **-->
+    <include file="$(find mavros)/launch/apm.launch">
+        <arg name="fcu_url" value="$(arg fcu_url)"/>
+    </include>
+
 
     <!-- This node will launch the node that bridges realsense-ros and MAVROS -->
     <include file="$(find vision_to_mavros)/launch/t265_tf_to_mavros.launch"/>

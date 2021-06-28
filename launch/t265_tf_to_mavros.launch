@@ -21,11 +21,20 @@
         Downfacing, USB port to the left  :       r = 3.1415926,  p = -1.5707963, y = 0,  gamma = -1.5707963
         Downfacing, USB port to the back  :       r = -1.5707963, p = -1.5707963, y = 0,  gamma = -1.5707963          
         Downfacing, USB port to the front :       r = 1.5707963,  p = -1.5707963, y = 0,  gamma = -1.5707963
+
+    * AeroBot rotation:
+    * Камера смотрит вниз под углом 45 градусов. Камера развернута так, что смотрит наза по ходу движения дрона.
+    USB порт слева: 
+        <param name="roll_cam"          value="0" />
+        <param name="pitch_cam"         value="0.785" />
+        <param name="yaw_cam"           value="3.14" />
+        <param name="gamma_world"       value="1.5707963" />
+
     -->
     <param name="roll_cam"          value="0" />
-    <param name="pitch_cam"         value="0" />
-    <param name="yaw_cam"           value="0" />
-    <param name="gamma_world"       value="-1.5707963" />
+    <param name="pitch_cam"         value="0.785" />
+    <param name="yaw_cam"           value="3.14" />
+    <param name="gamma_world"       value="1.5707963" />
 
     <node pkg="vision_to_mavros" type="vision_to_mavros_node" name="t265_to_mavros" output="screen" >
         <remap from="vision_pose" to="/mavros/vision_pose/pose" />
