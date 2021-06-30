@@ -58,13 +58,23 @@ The code has been tested and come with instructions to be used with [ArduPilot](
 
         type: bool
         default: false
-        Необходимо ли стартовать узел ros realsence
+        Необходимо ли стартовать узел realsence
 
 * fcu_url
 
         type: string
         default: /dev/ttyTHS1:921600
-        По умолчанию настроен для подключения к PX4 с Ardupilot через UART на скорости 921600 бод. 
+        По умолчанию настроен для подключения к PX4 с Ardupilot через UART на скорости 921600 бод.
+
+* source_frame_id
+        type: string
+        default: /t265_link
+        Система координат из которой происходит трансформация (Ros doc: The frame where the data originated)
+
+* target_frame_id
+        type: string
+        default: /t265_link
+        Система координат в которую производим трансформацию (Ros doc: The frame to which data should be transformed)
 
 ### Замечание
 Необходимо учитывать ориентацию камеры на дроне. Вращение каммеры происходит с помощью парметров в файле [t265_tf_to_mavros.launch](). Настройка по умолчанию падразумевает что камера смотрит под углом 45 градусов к плоскости горизонта назад по ходу дрона.

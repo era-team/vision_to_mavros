@@ -5,6 +5,8 @@
     <!-- Если установить парамерт "run_camera" как true, то запустится узел realsense2_camera -->
     <arg name="run_camera" default="false"/>
     <arg name="fcu_url" default="/dev/ttyTHS1:921600"/>
+    <arg name="target_frame_id" default="/t265_odom_frame"/>
+    <arg name="source_frame_id" default="/t265_link" />
 
     <!-- This node will launch the ROS driver for Realsense T265 -->
     <group if="$(arg run_camera)">
@@ -30,5 +32,8 @@
 
 
     <!-- This node will launch the node that bridges realsense-ros and MAVROS -->
-    <include file="$(find vision_to_mavros)/launch/t265_tf_to_mavros.launch"/>
+    <include file="$(find vision_to_mavros)/launch/t265_tf_to_mavros.launch">
+        <arg name="target_frame_id" value="$(arg target_frame_id)"/>
+        <arg name="source_frame_id" value="$(arg source_frame_id)" />
+    </include>
 </launch>
