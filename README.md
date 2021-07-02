@@ -4,14 +4,23 @@ The code has been tested and come with instructions to be used with [ArduPilot](
 
 ---
 
-# Ссылка на базовый репозиторий [Vision to MAVROS](https://github.com/thien94/vision_to_mavros)
+### Ссылка на базовый репозиторий [Vision to MAVROS](https://github.com/thien94/vision_to_mavros)
 
 ---
 
-## Важно
-! Так как используемый подход подразумевает использование ROS, то необходимо его предварительно установить на компьютер компаньен. Как установить ROS [читайте на оффициальной странице](http://wiki.ros.org/Installation/UbuntuARM).
+# ! Важно
+**!** Необходимо учитывать, что одометрия передается камерой T265, соответственно неоходимо [установить SDK для RealSence](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_jetson.md).
 
-! Необходимо учитывать, что одометрия передается камерой T265, соответственно неоходимо [установить SDK для RealSence](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_jetson.md).
+**!** Так как используемый подход подразумевает использование ROS, то необходимо его предварительно установить на компьютер компаньен. Как установить ROS [читайте на оффициальной странице](http://wiki.ros.org/Installation/UbuntuARM).
+
+**!** Проверить установлен ли **mavros и mavros-extras**. Это важно, так как именно [mavros-extras](http://wiki.ros.org/mavros_extras) отвечает за [vision_position](http://wiki.ros.org/mavros#mavros.2FPlugins.Notes). Без mavros-extras все запустится и ошибок никаких не будет, однако, параметр VISION_POSITION_ESTIMATE в mavlink инспекторе не появится. Это свидетельствует о том, что полетный контроллер не получает одометрию из камеры.   
+
+**!** Если использовался файл параметров [PX4Param](https://github.com/era-team/vision_to_mavros/tree/master/PX4Param) из репозитория, то необходимо выполнить:
+
+* Перекалибровать пульт ДУ
+* Проверить настройку режима полета в QGroundControl во вкладке Flight Mode
+* Проверить настройку питания. Вообще ее необходимо проверять после каждой замены аккумулятора.
+* Обратить внимание на ошибки появляющиеся в консоле. В QGroundControl версия 4.0.11 существует проблема с ошибкой 1: COMPASS_PRIMARY, на данный момент это сама QGroundControl глючит.
 
 ---
 
@@ -33,7 +42,7 @@ The code has been tested and come with instructions to be used with [ArduPilot](
 Вся методика подключения и настройка взята их этого описания [Non-GPS Navigation](https://discuss.ardupilot.org/t/integration-of-ardupilot-and-vio-tracking-camera-part-2-complete-installation-and-indoor-non-gps-flights/43405). 
 
 
-В репозитории содержится [конфигурационный файл]() для PX4 в папке [PX4Param](), который необходимо загрузить на полетный контроллер для корректной работы одометрии и полетного контроллера. Основные натройки:
+В репозитории содержится [конфигурационный файл](https://github.com/era-team/vision_to_mavros/blob/master/PX4Param/ARDUPILOT_PARAM_4_0_7.params) для PX4 в папке [PX4Param](https://github.com/era-team/vision_to_mavros/tree/master/PX4Param), который необходимо загрузить на полетный контроллер для корректной работы одометрии и полетного контроллера. Основные натройки:
 
 - Квадрокоптер с рамой V типа.
 - Плата питания Holibro PM07.
@@ -49,10 +58,10 @@ The code has been tested and come with instructions to be used with [ArduPilot](
 ## Перед запуском
 Предварительно необходимо настроить время на компьютере компаньене если это необходимо. Например, в Jetson nano отсутствует батарейка для часов реального времени и после перезапуска происходит сброс временных настроек.
 
-Необходимо клонировать репозиторий в рабочее пространство ROS и пересебрать его. После сборки в ROS должен увидеть пакет [vision_to_mavros]().
+Необходимо клонировать репозиторий в рабочее пространство ROS и пересебрать его. После сборки в ROS должен увидеть пакет [vision_to_mavros](https://github.com/era-team/vision_to_mavros).
 
 ## Запуск
-Для начала трансляции одометрии в полетный контроллер необходимо запустить [vision_to_mavros]() с помошью launch-файла [t265_all_nodes.launch](). Данный файл имеет несколько настроек:
+Для начала трансляции одометрии в полетный контроллер необходимо запустить [vision_to_mavros](https://github.com/era-team/vision_to_mavros) с помошью launch-файла [t265_all_nodes.launch](https://github.com/era-team/vision_to_mavros/blob/master/launch/t265_all_nodes.launch). Данный файл имеет несколько настроек:
 
 * run_camera
 
@@ -67,17 +76,23 @@ The code has been tested and come with instructions to be used with [ArduPilot](
         По умолчанию настроен для подключения к PX4 с Ardupilot через UART на скорости 921600 бод.
 
 * source_frame_id
+
         type: string
         default: /t265_link
         Система координат из которой происходит трансформация (Ros doc: The frame where the data originated)
 
 * target_frame_id
+
         type: string
         default: /t265_link
         Система координат в которую производим трансформацию (Ros doc: The frame to which data should be transformed)
 
+Если все подключенно верно в соответствии с инструкцией, установлены все необходимые пакеты и запускается без ошибок то в mavlink инспекторе должна появится строчка **VISION_POSITION_ESTIMATE**, а в консоле предупреждения о том что GPS сброшен (GPS glich).
+
+Если **VISION_POSITION_ESTIMATE** не появляется в mavlink инспекторе, то возврашаемся к разделу "ВАЖНО" и проверяем все еще раз.
+
 ### Замечание
-Необходимо учитывать ориентацию камеры на дроне. Вращение каммеры происходит с помощью парметров в файле [t265_tf_to_mavros.launch](). Настройка по умолчанию падразумевает что камера смотрит под углом 45 градусов к плоскости горизонта назад по ходу дрона.
+Необходимо учитывать ориентацию камеры на дроне. Вращение каммеры происходит с помощью парметров в файле [t265_tf_to_mavros.launch](https://github.com/era-team/vision_to_mavros/blob/master/launch/t265_tf_to_mavros.launch). Настройка по умолчанию падразумевает что камера смотрит под углом 45 градусов к плоскости горизонта назад по ходу дрона.
 
         <param name="roll_cam"          value="0" />
         <param name="pitch_cam"         value="0.785" />
@@ -88,7 +103,7 @@ The code has been tested and come with instructions to be used with [ArduPilot](
 
 ---
 
-# Основные осправления
-- Добавлены параметры в [t265_all_nodes.launch]()
-- Допавлен файл параметров для PX4 [PX4Param]()
+## Основные правки
+- Добавлены параметры в [t265_all_nodes.launch](https://github.com/era-team/vision_to_mavros/blob/master/launch/t265_all_nodes.launch)
+- Допавлен файл параметров для PX4 [PX4Param](https://github.com/era-team/vision_to_mavros/tree/master/PX4Param)
 - Отключена сборка файла t265_fisheye_undistort.cpp
