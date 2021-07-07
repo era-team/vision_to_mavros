@@ -6,7 +6,7 @@
     <arg name="run_camera" default="false"/>
     <arg name="fcu_url" default="/dev/ttyTHS1:921600"/>
     <arg name="target_frame_id" default="/t265_odom_frame"/>
-    <arg name="source_frame_id" default="/t265_link" />
+    <arg name="source_frame_id" default="/t265_pose_frame" />
 
     <!-- This node will launch the ROS driver for Realsense T265 -->
     <group if="$(arg run_camera)">
